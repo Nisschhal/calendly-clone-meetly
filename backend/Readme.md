@@ -112,3 +112,27 @@ And run the server
 
 - create errorHandler middleware to handle any error
 - create asyncHandler middleware to handle async functions
+
+### error handler middleware
+
+- create error-code.enum.ts to store error codes
+- create app-error.ts to create custom error class
+- create error-handler middleware to handle AppError and other error
+
+### database
+
+1. Install the npm package:
+
+`npm install typeorm`
+
+2. You need to install reflect-metadata shim:
+
+`npm install reflect-metadata`
+
+and import it somewhere in the global place of your app (for example in app.ts):
+
+`import "reflect-metadata"`
+
+3. You may need to install node typings:
+
+`npm install @types/node --save-dev`

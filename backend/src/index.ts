@@ -6,6 +6,7 @@ import { HTTPSTATUS } from "./config/http.config"
 import { errorHandler } from "./middlewares/errorHandler.middleware"
 import { asyncHandler } from "./middlewares/asyncHandler.middleware"
 import { BadRequestException } from "./utils/app-error"
+import { initializeDatabase } from "./database/database"
 
 const app = express()
 const BASE_PATH = config.BASE_PATH
@@ -31,7 +32,8 @@ app.use(
 // Error Handler
 app.use(errorHandler)
 //  Activate server and Listen on port
-app.listen(config.PORT, () => {
+app.listen(config.PORT, async () => {
+  await initializeDatabase()
   console.log(
     `Server running on port ${config.PORT} in ${config.NODE_ENV} mode`
   )
