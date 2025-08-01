@@ -91,4 +91,24 @@ Create the following file structure - src - controllers - middlewares - routes -
 
 Create a .env file in the root directory and Copy the .env file into the root directory
 
+## Run the server
+
+- use the express.json() middleware to parse the body of the request
+- use the express.urlencoded() middleware to parse the url of the request
+- use the cors({ origin: config.clientUrl , credentials: true}) middleware to allow cross-origin requests
+
 And run the server
+
+## Implementation Detail
+
+- add a .gitignore file to ignore the node_modules folder
+
+### /src/config
+
+- create app.config.ts to store environment variables
+- create http.config.ts to store http status name: codes in object and get its type
+
+### /src/middleware
+
+- create errorHandler middleware to handle any error
+- create asyncHandler middleware to handle async functions

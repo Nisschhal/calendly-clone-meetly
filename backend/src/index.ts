@@ -5,6 +5,7 @@ import { config } from "./config/app.config"
 import { HTTPSTATUS } from "./config/http.config"
 import { errorHandler } from "./middlewares/errorHandler.middleware"
 import { asyncHandler } from "./middlewares/asyncHandler.middleware"
+import { BadRequestException } from "./utils/app-error"
 
 const app = express()
 const BASE_PATH = config.BASE_PATH
@@ -22,8 +23,8 @@ app.use(
 app.use(
   "/",
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    throw new Error("throwing async error")
-    return res.status(HTTPSTATUS.OK).json({ message: "Server is running" })
+    throw new BadRequestException("throwing async error")
+    res.status(HTTPSTATUS.OK).json({ message: "Server is running" })
   })
 )
 
