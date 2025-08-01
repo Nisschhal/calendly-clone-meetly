@@ -1,0 +1,45 @@
+# Node.js and dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp
+.pnp.js
+.npm/
+.eslintcache
+
+# Build artifacts
+/build
+/dist
+/out
+/coverage
+
+# Environment variables
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# IDE and OS specific files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# Optional: if you are using a specific framework or tool that generates files
+# For Create React App:
+# build/
+
+# For Next.js:
+# .next/
+# out/
+
+# For Vite:
+# dist/
+# .vite/
