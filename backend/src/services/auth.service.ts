@@ -1,5 +1,5 @@
 import { AppDataSource } from "../config/db.config"
-import { RegisterDto } from "../database/dto/auth.dto"
+import { LoginDto, RegisterDto } from "../database/dto/auth.dto"
 import { Availability } from "../database/entities/availability.entity"
 import {
   DayAvailability,
@@ -79,99 +79,48 @@ async function generateUsername(name: string): Promise<string> {
   return username
 }
 
-// import { v4 as uuidv4 } from "uuid"
-// import { LoginDto, RegisterDto } from "../database/dto/auth.dto"
-// import { User } from "../database/entities/user.entity"
-// import { BadRequestException, NotFoundException } from "../utils/app-error"
-// import { Availability } from "../database/entities/availability.entity"
-// import { AppDataSource } from "../config/db.config"
-// import {
-//   DayAvailability,
-//   DayOfWeekEnum,
-// } from "../database/entities/day-availability.entity"
+// export const loginService = async (loginDto: LoginDto) => {
+//   const userRepository = AppDataSource.getRepository(User);
 
-// export const registerService = async (registerDto: RegisterDto) => {
-//   const userRepository = AppDataSource.getRepository(User)
-//   const availabilityRepository = AppDataSource.getRepository(Availability)
-//   const dayAvailabilityRepository = AppDataSource.getRepository(DayAvailability)
+//   const user = await userRepository.findOne({
+//     where: { email: loginDto.email },
+//   });
 
-//   const existingUser = await userRepository.findOne({
-//     where: { email: registerDto.email },
-//   })
-
-//   if (existingUser) {
-//     throw new BadRequestException("User already exists")
+//   if (!user) {
+//     throw new NotFoundException("User not found");
 //   }
 
-//   const username = await generateUsername(registerDto.name)
-//   const user = userRepository.create({
-//     ...registerDto,
-//     username,
-//   })
-
-//   const availability = availabilityRepository.create({
-//     timeGap: 30,
-//     days: Object.values(DayOfWeekEnum).map((day) => {
-//       return dayAvailabilityRepository.create({
-//         day: day,
-//         startTime: new Date(`2025-03-01T09:00:00Z`), //9:00
-//         endTime: new Date(`2025-03-01T17:00:00Z`), //5:00pm
-//         isAvailable:
-//           day !== DayOfWeekEnum.SUNDAY && day !== DayOfWeekEnum.SATURDAY,
-//       })
-//     }),
-//   })
-
-//   user.availability = availability
-
-//   await userRepository.save(user)
-
-//   return { user: user.omitPassword() }
-// }
-
-// // export const loginService = async (loginDto: LoginDto) => {
-// //   const userRepository = AppDataSource.getRepository(User);
-
-// //   const user = await userRepository.findOne({
-// //     where: { email: loginDto.email },
-// //   });
-
-// //   if (!user) {
-// //     throw new NotFoundException("User not found");
-// //   }
-
-// //   const isPasswordValid = await user.comparePassword(loginDto.password);
-// //   if (!isPasswordValid) {
-// //     throw new UnauthorizedException("Invalid email/password");
-// //   }
-
-// //   const { token, expiresAt } = signJwtToken({ userId: user.id });
-
-// //   return {
-// //     user: user.omitPassword(),
-// //     accessToken: token,
-// //     expiresAt,
-// //   };
-// // };
-
-// async function generateUsername(name: string): Promise<string> {
-//   const cleanName = name.replace(/\s+/g, "").toLowerCase()
-//   const baseUsername = cleanName
-
-//   const uuidSuffix = uuidv4().replace(/\s+/g, "").slice(0, 4)
-//   const userRepository = AppDataSource.getRepository(User)
-
-//   let username = `${baseUsername}${uuidSuffix}`
-//   let existingUser = await userRepository.findOne({
-//     where: { username },
-//   })
-
-//   while (existingUser) {
-//     username = `${baseUsername}${uuidv4().replace(/\s+/g, "").slice(0, 4)}`
-//     existingUser = await userRepository.findOne({
-//       where: { username },
-//     })
+//   const isPasswordValid = await user.comparePassword(loginDto.password);
+//   if (!isPasswordValid) {
+//     throw new UnauthorizedException("Invalid email/password");
 //   }
 
-//   return username
-// }
+//   const { token, expiresAt } = signJwtToken({ userId: user.id });
+
+//   return {
+//     user: user.omitPassword(),
+//     accessToken: token,
+//     expiresAt,
+//   };
+// };
+
+export const loginService = async (loginDto: LoginDto) => {
+  const userRepo = AppDataSource.getRepository(User)
+  const existingUser = await userRepo.findOneBy({ email: loginDto.email })
+  if (!existingUser) {
+    throw new BadRequestException(
+      "User not found",
+      ErrorCodeEnum.AUTH_USER_NOT_FOUND
+    )
+  }
+
+  const isPasswordValid = await existingUser.comparePassword(loginDto.password)
+  if (!isPasswordValid) {
+    throw new BadRequestException(
+      "Invalid email/password",
+      ErrorCodeEnum.AUTH_INVALID_EMAIL_PASSWORD
+    )
+  }
+
+  return { user: existingUser.omitPassword() }
+}
