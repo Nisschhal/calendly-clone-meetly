@@ -142,3 +142,17 @@ and import it somewhere in the global place of your app (for example in app.ts):
 
 6. Create database entities: src/database/entities
 7. Create database migrations: src/database/migrations
+8. Confirm db:generate and db:migrate commands work
+
+- for this make sure that your db.config.ts file has the correct database url, entities, and migrations path
+
+### controllers
+
+- create auth.controller.ts to handle authentication
+- create user.controller.ts to handle user operations
+- create auth.service.ts to handle authentication
+- create user.service.ts to handle user operations
+
+**_ For validation we use class-validator and class-transformer as it is similar to typeorm_**
+
+- add validation in entities

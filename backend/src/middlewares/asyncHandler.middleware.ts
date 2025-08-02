@@ -7,8 +7,8 @@ type AsyncControllerType = (
 ) => Promise<any>
 
 export const asyncHandler =
-  (controller: AsyncControllerType) =>
-  async (req: Request, res: Response, next: NextFunction) => {
+  (controller: AsyncControllerType): AsyncControllerType =>
+  async (req, res, next) => {
     try {
       await controller(req, res, next)
     } catch (error) {
