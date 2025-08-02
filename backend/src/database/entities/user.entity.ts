@@ -2,10 +2,19 @@ import {
   BeforeInsert,
   BeforeUpdate,
   Column,
+  CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm"
 import { compareValue, hashValue } from "../../utils/bcrypt"
+import { Integration } from "./integration.entity"
+import { Event } from "./event.entity"
+import { Availability } from "./availability.entity"
+import { Meeting } from "./meeting.entity"
 
 @Entity("users")
 export class User {
@@ -27,6 +36,33 @@ export class User {
   @Column({ nullable: true })
   imageUrl: string
 
+  // Events
+  @OneToMany(() => Event, (event) => event.user, { cascade: true })
+  events: Event[]
+
+  // Integrations
+  @OneToMany(() => Integration, (integration) => integration.user, {
+    cascade: true,
+  })
+  integrations: Integration[]
+
+  // Availability
+  @OneToOne(() => Availability, (availability) => availability.user, {
+    cascade: true,
+  })
+  @JoinColumn()
+  availability: Availability
+
+  // MEETING
+  @OneToMany(() => Meeting, (meeting) => meeting.user, { cascade: true })
+  meetings: Meeting[]
+
+  @CreateDateColumn()
+  created_at: Date
+
+  @UpdateDateColumn()
+  updated_at: Date
+
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword() {
@@ -43,7 +79,7 @@ export class User {
   }
 
   omitPassword(): Omit<User, "password"> {
-    const { password, ...user } = this
-    return user as Omit<User, "password">
+    const { password, ...userWithoutPassword } = this
+    return userWithoutPassword as Omit<User, "password">
   }
 }

@@ -12,9 +12,7 @@ export const getDatabaseConfig = () => {
     type: "postgres",
     url: databaseUrl,
     entities: [path.join(__dirname, "../database/entities/*.entity.{ts,js}")],
-    migrations: [
-      path.join(__dirname, "../database/migrations/*.migration.{ts,js}"),
-    ],
+    migrations: [path.join(__dirname, "../database/migrations/*.{ts,js}")],
     synchronize: !isProduction,
     logging: isProduction ? false : ["error"],
     ssl: isProduction

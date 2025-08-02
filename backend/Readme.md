@@ -136,3 +136,9 @@ and import it somewhere in the global place of your app (for example in app.ts):
 3. You may need to install node typings:
 
 `npm install @types/node --save-dev`
+
+4. Create database connection: src/database/database.ts
+5. Create database config for typeorm: src/config/db.config.ts
+
+6. Create database entities: src/database/entities
+7. Create database migrations: src/database/migrations
