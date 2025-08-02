@@ -17,6 +17,6 @@ export const registerController = asyncHandlerAndValidate(
     const { user } = await registerService(registerDto)
     res
       .status(HTTPSTATUS.CREATED)
-      .json({ message: "User created successfully" })
+      .json({ message: "User created successfully", user })
   }
 )

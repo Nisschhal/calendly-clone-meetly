@@ -67,7 +67,9 @@ export class User {
   @BeforeUpdate()
   async hashPassword() {
     if (this.password) {
-      this.password = await hashValue(this.password, 10)
+      const hashedPassword = await hashValue(this.password, 10)
+
+      this.password = hashedPassword
     }
   }
 
