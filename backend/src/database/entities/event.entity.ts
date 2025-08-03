@@ -35,6 +35,9 @@ export class Event {
   @Column({ default: false })
   isPrivate: boolean
 
+  @Column({ default: 30 })
+  duration: number
+
   @Column({ type: "enum", enum: EventLocationEnumType })
   locationType: EventLocationEnumType
 

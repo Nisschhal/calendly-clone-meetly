@@ -1,9 +1,17 @@
 import { HTTPSTATUS } from "../config/http.config"
-import { CreateEventDto, EventIdDto } from "../database/dto/event.dto"
+import {
+  CreateEventDto,
+  EventIdDto,
+  UserNameAndSlugDto,
+  UsernameDto,
+} from "../database/dto/event.dto"
 import { asyncHandlerAndValidate } from "../middlewares/withValidation.middleware"
 import e, { Request, Response } from "express"
 import {
   createEventService,
+  deleteEventService,
+  getPublicEventsByUsernameAndSlugService,
+  getPublicEventsByUsernameService,
   getUserEventService,
   toggleEventPrivacyService,
 } from "../services/event.service"
@@ -46,6 +54,51 @@ export const toggleEventPrivacyController = asyncHandlerAndValidate(
         event.isPrivate ? "private" : "public"
       } successfully`,
       data: { event },
+    })
+  }
+)
+
+export const getPublicEventByUsernameController = asyncHandlerAndValidate(
+  UsernameDto,
+  "params",
+  async (req: Request, res: Response, usernameDto: UsernameDto) => {
+    const { events, user } = await getPublicEventsByUsernameService(
+      usernameDto.username
+    )
+    return res.status(HTTPSTATUS.OK).json({
+      message: "Username event fetched successfully",
+      user,
+      events,
+    })
+  }
+)
+export const getPublicEventByUsernameAndSlugController =
+  asyncHandlerAndValidate(
+    UserNameAndSlugDto,
+    "params",
+    async (req: Request, res: Response, usernameDto: UserNameAndSlugDto) => {
+      const { events, user } = await getPublicEventsByUsernameAndSlugService(
+        usernameDto.username,
+        usernameDto.slug
+      )
+      return res.status(HTTPSTATUS.OK).json({
+        message: "Username and Slug event fetched successfully",
+        user,
+        events,
+      })
+    }
+  )
+
+export const deleteEventController = asyncHandlerAndValidate(
+  EventIdDto,
+  "params",
+  async (req: Request, res: Response, eventIdDto: EventIdDto) => {
+    const userId = req.user?.id as string
+    const event = await deleteEventService(userId, eventIdDto.eventId)
+
+    return res.status(HTTPSTATUS.OK).json({
+      message: "Event deleted successfully",
+      deletedEvent: event,
     })
   }
 )
