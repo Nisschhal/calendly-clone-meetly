@@ -24,9 +24,14 @@ export const loginController = asyncHandlerAndValidate(
   LoginDto,
   "body",
   async (req, res, loginDto) => {
-    const { user } = await loginService(loginDto)
+    const { user, accessToken, expiresAt } = await loginService(loginDto)
     res
       .status(HTTPSTATUS.OK)
-      .json({ message: "User logged in successfully", user })
+      .json({
+        message: "User logged in successfully",
+        user,
+        accessToken,
+        expiresAt,
+      })
   }
 )

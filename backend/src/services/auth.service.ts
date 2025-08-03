@@ -7,8 +7,9 @@ import {
 } from "../database/entities/day-availability.entity"
 import { User } from "../database/entities/user.entity"
 import { ErrorCodeEnum } from "../enums/error-code.enum"
-import { BadRequestException } from "../utils/app-error"
+import { BadRequestException, NotFoundException } from "../utils/app-error"
 import { v4 as uuidv4 } from "uuid"
+import { signJwtToken } from "../utils/jtw"
 export const registerService = async (registerDto: RegisterDto) => {
   // Supabase:db Repos
   const userRepos = AppDataSource.getRepository(User)
@@ -108,7 +109,7 @@ export const loginService = async (loginDto: LoginDto) => {
   const userRepo = AppDataSource.getRepository(User)
   const existingUser = await userRepo.findOneBy({ email: loginDto.email })
   if (!existingUser) {
-    throw new BadRequestException(
+    throw new NotFoundException(
       "User not found",
       ErrorCodeEnum.AUTH_USER_NOT_FOUND
     )
@@ -122,5 +123,7 @@ export const loginService = async (loginDto: LoginDto) => {
     )
   }
 
-  return { user: existingUser.omitPassword() }
+  const { token, expiresAt } = signJwtToken({ userId: existingUser.id })
+
+  return { user: existingUser.omitPassword(), accessToken: token, expiresAt }
 }
