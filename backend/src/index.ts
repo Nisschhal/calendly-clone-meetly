@@ -9,6 +9,8 @@ import { BadRequestException } from "./utils/app-error"
 import { initializeDatabase } from "./database/database"
 
 import authRoutes from "./routes/auth.route"
+import "./config/passport.config"
+import passport from "passport"
 
 const app = express()
 const BASE_PATH = config.BASE_PATH
@@ -21,6 +23,9 @@ app.use(
     credentials: true,
   })
 )
+
+// Initialize Passport
+app.use(passport.initialize())
 
 app.get(
   "/",
