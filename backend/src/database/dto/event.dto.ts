@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
 } from "class-validator"
 import { EventLocationEnumType } from "../entities/event.entity"
 
@@ -23,4 +24,10 @@ export class CreateEventDto {
   @IsNotEmpty()
   @IsEnum(EventLocationEnumType)
   locationType: EventLocationEnumType
+}
+
+export class EventIdDto {
+  @IsUUID(4, { message: "Invalid event id" })
+  @IsNotEmpty()
+  eventId: string
 }

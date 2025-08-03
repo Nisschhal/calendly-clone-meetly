@@ -1,5 +1,5 @@
 import { AppDataSource } from "../config/db.config"
-import { CreateEventDto } from "../database/dto/event.dto"
+import { CreateEventDto, EventIdDto } from "../database/dto/event.dto"
 import { Event, EventLocationEnumType } from "../database/entities/event.entity"
 import { User } from "../database/entities/user.entity"
 import { BadRequestException } from "../utils/app-error"
@@ -43,4 +43,25 @@ export const getUserEventService = async (userId: string) => {
     events: user.events,
     username: user.username,
   }
+}
+
+export const toggleEventPrivacyService = async (
+  userId: string,
+  eventId: string
+) => {
+  const eventRepo = AppDataSource.getRepository(Event)
+  const event = await eventRepo.findOne({
+    where: {
+      id: eventId,
+      user: { id: userId },
+    },
+  })
+  if (!event) {
+    throw new BadRequestException("Event not found!")
+  }
+
+  event.isPrivate = !event.isPrivate
+  await eventRepo.save(event)
+
+  return event
 }

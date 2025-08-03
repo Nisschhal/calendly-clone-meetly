@@ -21,7 +21,7 @@ export enum EventLocationEnumType {
 @Entity("events")
 export class Event {
   @PrimaryGeneratedColumn("uuid")
-  id: number
+  id: string
 
   @Column({ nullable: false })
   title: string

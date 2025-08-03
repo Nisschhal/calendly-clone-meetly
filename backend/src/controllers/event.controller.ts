@@ -1,10 +1,11 @@
 import { HTTPSTATUS } from "../config/http.config"
-import { CreateEventDto } from "../database/dto/event.dto"
+import { CreateEventDto, EventIdDto } from "../database/dto/event.dto"
 import { asyncHandlerAndValidate } from "../middlewares/withValidation.middleware"
 import e, { Request, Response } from "express"
 import {
   createEventService,
   getUserEventService,
+  toggleEventPrivacyService,
 } from "../services/event.service"
 import { asyncHandler } from "../middlewares/asyncHandler.middleware"
 
@@ -28,6 +29,23 @@ export const getUserEventController = asyncHandler(
     return res.status(HTTPSTATUS.OK).json({
       message: "User event fetched successfully",
       data: { events, username },
+    })
+  }
+)
+
+export const toggleEventPrivacyController = asyncHandlerAndValidate(
+  EventIdDto,
+  "params",
+  async (req: Request, res: Response, eventIdDto: EventIdDto) => {
+    const userId = req.user?.id as string
+
+    const event = await toggleEventPrivacyService(userId, eventIdDto.eventId)
+
+    return res.status(HTTPSTATUS.OK).json({
+      message: `Event set to ${
+        event.isPrivate ? "private" : "public"
+      } successfully`,
+      data: { event },
     })
   }
 )
