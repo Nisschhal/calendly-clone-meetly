@@ -24,7 +24,9 @@ export function withValidation<T extends object>(
   ) {
     return async (req: Request, res: Response, next: NextFunction) => {
       try {
+        console.log(req[source])
         const dtoInstance = plainToInstance(DtoClass, req[source])
+        // console.log(dtoInstance)
         const errors = await validate(dtoInstance)
 
         if (errors.length > 0) {

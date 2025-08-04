@@ -11,6 +11,7 @@ import authRoutes from "./routes/auth.route"
 import "./config/passport.config"
 import passport from "passport"
 import eventRoutes from "./routes/event.route"
+import availabilityRoutes from "./routes/availability.route"
 
 const app = express()
 const BASE_PATH = config.BASE_PATH
@@ -38,6 +39,7 @@ app.get(
 // Routes
 app.use(`${BASE_PATH}/auth`, authRoutes)
 app.use(`${BASE_PATH}/event`, eventRoutes)
+app.use(`${BASE_PATH}/availability`, availabilityRoutes)
 
 // Error Handler
 app.use(errorHandler)
