@@ -1,10 +1,13 @@
 import { AppDataSource } from "../config/db.config"
+import { googleOAuth2Client } from "../config/oauth.config"
 import {
   Integration,
   IntegrationAppTypeEnum,
   IntegrationCategoryEnum,
   IntegrationProviderEnum,
 } from "../database/entities/integration.entity"
+import { BadRequestException } from "../utils/app-error"
+import { encodeState } from "../utils/helper"
 
 const appTypeToProviderMap: Record<
   IntegrationAppTypeEnum,
@@ -63,7 +66,88 @@ export const checkIntegrationService = async (
 ) => {
   const integrationRepository = AppDataSource.getRepository(Integration)
   const integration = await integrationRepository.findOne({
-    where: { user: { id: userId }, app_type: appType },
+    where: { userId: userId, app_type: appType },
   })
   return !!integration
+}
+
+export const connectAppService = async (
+  userId: string,
+  appType: IntegrationAppTypeEnum
+) => {
+  // const integrationRepo = AppDataSource.getRepository(Integration)
+
+  let authUrl: string
+
+  const state = encodeState({ userId, appType })
+
+  switch (appType) {
+    case IntegrationAppTypeEnum.GOOGLE_MEET_AND_CALENDAR:
+      authUrl = googleOAuth2Client.generateAuthUrl({
+        access_type: "offline",
+        scope: ["https://www.googleapis.com/auth/calendar.events"],
+        prompt: "consent",
+        state,
+      })
+      break
+    default:
+      throw new BadRequestException(
+        `Integration type ${appType} is not supported for connection`
+      )
+  }
+  return { url: authUrl }
+}
+
+export const createIntegrationService = async (data: {
+  userId: string
+  provider: IntegrationProviderEnum
+  category: IntegrationCategoryEnum
+  app_type: IntegrationAppTypeEnum
+  access_token: string
+  refresh_token?: string
+  expiry_date: number | null
+  metadata: any
+}) => {
+  const integrationRepository = AppDataSource.getRepository(Integration)
+  const existingIntegration = await integrationRepository.findOne({
+    where: {
+      userId: data.userId,
+      app_type: data.app_type,
+    },
+  })
+
+  if (existingIntegration) {
+    throw new BadRequestException(`${data.app_type} already connected`)
+  }
+
+  const integration = integrationRepository.create({
+    provider: data.provider,
+    category: data.category,
+    app_type: data.app_type,
+    access_token: data.access_token,
+    refresh_token: data.refresh_token!,
+    expiry_date: data.expiry_date,
+    metadata: data.metadata,
+    userId: data.userId,
+    isConnected: true,
+  })
+
+  await integrationRepository.save(integration)
+
+  return integration
+}
+
+export const validateGoogleTokenService = async (
+  accessToken: string,
+  refreshToken: string,
+  expiryDate: number | null
+) => {
+  if (expiryDate && expiryDate <= Date.now()) {
+    googleOAuth2Client.setCredentials({
+      refresh_token: refreshToken,
+    })
+    const { credentials } = await googleOAuth2Client.refreshAccessToken()
+    return credentials.access_token
+  }
+  return accessToken
 }

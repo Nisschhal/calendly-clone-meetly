@@ -3,7 +3,6 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -28,16 +27,16 @@ export enum IntegrationCategoryEnum {
   CALENDAR = "CALENDAR",
 }
 
-interface GoogleMeetAndCalenderMetadata {
+interface GoogleMeetAndCalendarMetadata {
   scope: string
   token_type: string
 }
 
 interface ZoomMetadata {}
 
-type IntegrationMetadata = GoogleMeetAndCalenderMetadata | ZoomMetadata
+type IntegrationMetadata = GoogleMeetAndCalendarMetadata | ZoomMetadata
 
-@Entity("integration")
+@Entity({ name: "integrations" })
 export class Integration {
   @PrimaryGeneratedColumn("uuid")
   id: string
@@ -67,15 +66,15 @@ export class Integration {
   isConnected: boolean
 
   @Column({ nullable: false })
-  user_id: string
+  userId: string
 
   @ManyToOne(() => User, (user) => user.integrations)
-  @JoinColumn({ name: "user_id" })
+  @JoinColumn({ name: "userId" })
   user: User
 
   @CreateDateColumn()
-  created_at: Date
+  createdAt: Date
 
   @UpdateDateColumn()
-  updated_at: Date
+  updatedAt: Date
 }
