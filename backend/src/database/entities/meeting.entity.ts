@@ -47,7 +47,14 @@ export class Meeting {
   @Column()
   calenderEventId: string
 
-  @Column({ type: "enum", enum: MeetingStatusEnum })
+  @Column()
+  calendarAppType: string
+
+  @Column({
+    type: "enum",
+    enum: MeetingStatusEnum,
+    default: MeetingStatusEnum.SCHEDULE,
+  })
   status: MeetingStatusEnum
 
   @CreateDateColumn()

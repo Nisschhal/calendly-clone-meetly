@@ -15,6 +15,7 @@ import { Meeting } from "./meeting.entity"
 export enum EventLocationEnumType {
   GOOGLE_MEET_AND_CALENDER = IntegrationAppTypeEnum.GOOGLE_MEET_AND_CALENDAR,
   ZOOM_MEETING = IntegrationAppTypeEnum.ZOOM_MEETING,
+  MICROSOFT_TEAMS = IntegrationAppTypeEnum.OUTLOOK_CALENDAR,
 }
 
 @Entity("events")

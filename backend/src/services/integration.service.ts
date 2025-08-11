@@ -142,12 +142,13 @@ export const validateGoogleTokenService = async (
   refreshToken: string,
   expiryDate: number | null
 ) => {
-  if (expiryDate && expiryDate <= Date.now()) {
+  if (expiryDate === null || Date.now() >= expiryDate) {
     googleOAuth2Client.setCredentials({
       refresh_token: refreshToken,
     })
     const { credentials } = await googleOAuth2Client.refreshAccessToken()
     return credentials.access_token
   }
+
   return accessToken
 }

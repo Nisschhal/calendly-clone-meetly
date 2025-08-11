@@ -69,43 +69,39 @@ export const connectAppController = asyncHandlerAndValidate(
 export const googleOAuthCallbackController = asyncHandler(
   async (req: Request, res: Response) => {
     const { code, state } = req.query
-
     const CLIENT_URL = `${CLIENT_APP_URL}?app_type=google`
-
-    if (!code || typeof code !== "string") {
-      return res.redirect(`${CLIENT_URL}&error=Invalid authorization code`)
+    try {
+      if (!code || typeof code !== "string") {
+        return res.redirect(`${CLIENT_URL}&error=Invalid authorization code`)
+      }
+      if (!state || typeof state !== "string") {
+        return res.redirect(`${CLIENT_URL}&error=Invalid state parameter`)
+      }
+      const { userId, appType } = decodeState(state)
+      if (!userId || !appType) {
+        return res.redirect(`${CLIENT_URL}&error=User ID or app type missing`)
+      }
+      const { tokens } = await googleOAuth2Client.getToken(code)
+      if (!tokens.access_token || !tokens.refresh_token) {
+        return res.redirect(`${CLIENT_URL}&error=Failed to retrieve tokens`)
+      }
+      await createIntegrationService({
+        userId,
+        provider: IntegrationProviderEnum.GOOGLE,
+        category: IntegrationCategoryEnum.CALENDAR_AND_VIDEO_CONFERENCING,
+        app_type: IntegrationAppTypeEnum.GOOGLE_MEET_AND_CALENDAR,
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+        expiry_date: tokens.expiry_date || null,
+        metadata: {
+          scope: tokens.scope || "",
+          token_type: tokens.token_type || "",
+        },
+      })
+      return res.redirect(`${CLIENT_URL}&success=true`)
+    } catch (error: any) {
+      console.error("Google OAuth callback error:", error.message)
+      return res.redirect(`${CLIENT_URL}&error=Authentication failed`)
     }
-
-    if (!state || typeof state !== "string") {
-      return res.redirect(`${CLIENT_URL}&error=Invalid state parameter`)
-    }
-
-    // Decode the state to get userId and appType
-    const { userId, appType } = decodeState(state)
-
-    if (!userId || !appType) {
-      return res.redirect(`${CLIENT_URL}&error=User ID or app type missing`)
-    }
-    const { tokens } = await googleOAuth2Client.getToken(code)
-
-    if (!tokens.access_token) {
-      return res.redirect(`${CLIENT_URL}&error=Failed to retrieve access token`)
-    }
-
-    // Save the tokens and update the integration status
-    await createIntegrationService({
-      userId,
-      provider: IntegrationProviderEnum.GOOGLE,
-      category: IntegrationCategoryEnum.CALENDAR_AND_VIDEO_CONFERENCING,
-      app_type: IntegrationAppTypeEnum.GOOGLE_MEET_AND_CALENDAR,
-      access_token: tokens.access_token,
-      refresh_token: tokens.refresh_token!,
-      expiry_date: tokens.expiry_date || null,
-      metadata: {
-        scope: tokens.scope,
-        token_type: tokens.token_type,
-      },
-    })
-    return res.redirect(`${CLIENT_URL}&success=true`)
   }
 )
