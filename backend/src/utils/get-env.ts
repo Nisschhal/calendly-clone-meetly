@@ -4,6 +4,9 @@ export const getEnv = (key: string, defaultValue: string = "") => {
     if (defaultValue === "") {
       throw new Error(`Environment variable ${key} is required`)
     }
+    console.warn(
+      `Environment variable ${key} is not set, using default value: ${defaultValue}`
+    )
     return defaultValue
   }
   return value

@@ -7,6 +7,7 @@ import { config } from "./app.config"
 export const getDatabaseConfig = () => {
   const isProduction = config.NODE_ENV === "production"
   const databaseUrl = config.DATABASE_URL
+  console.log("Database URL:", databaseUrl)
 
   return new DataSource({
     type: "postgres",

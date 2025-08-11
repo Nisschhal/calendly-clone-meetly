@@ -10,21 +10,22 @@ import {
 } from "typeorm"
 import { User } from "./user.entity"
 
-export enum ItegrationProviderEnum {
+export enum IntegrationProviderEnum {
   GOOGLE = "GOOGLE",
   ZOOM = "ZOOM",
+  MICROSOFT = "MICROSOFT",
 }
 
 export enum IntegrationAppTypeEnum {
-  GOOGLE_MEET_AND_CALENDER = "GOOGLE_MEET_AND_CALENDER",
+  GOOGLE_MEET_AND_CALENDAR = "GOOGLE_MEET_AND_CALENDAR",
   ZOOM_MEETING = "ZOOM_MEETING",
   OUTLOOK_CALENDAR = "OUTLOOK_CALENDAR",
 }
 
-export enum ItegrationCategoryEnum {
-  CALENDER_AND_VIDEO_CONFERENCE = "CALENDER_AND_VIDEO_CONFERENCE",
-  VIDEO_CONFERENCE = "VIDEO_CONFERENCE",
-  CALENDER = "CALENDER",
+export enum IntegrationCategoryEnum {
+  CALENDAR_AND_VIDEO_CONFERENCING = "CALENDAR_AND_VIDEO_CONFERENCING",
+  VIDEO_CONFERENCING = "VIDEO_CONFERENCING",
+  CALENDAR = "CALENDAR",
 }
 
 interface GoogleMeetAndCalenderMetadata {
@@ -41,11 +42,11 @@ export class Integration {
   @PrimaryGeneratedColumn("uuid")
   id: string
 
-  @Column({ type: "enum", enum: ItegrationProviderEnum })
-  provider: ItegrationProviderEnum
+  @Column({ type: "enum", enum: IntegrationProviderEnum })
+  provider: IntegrationProviderEnum
 
-  @Column({ type: "enum", enum: ItegrationCategoryEnum })
-  category: ItegrationCategoryEnum
+  @Column({ type: "enum", enum: IntegrationCategoryEnum })
+  category: IntegrationCategoryEnum
 
   @Column({ type: "enum", enum: IntegrationAppTypeEnum })
   app_type: IntegrationAppTypeEnum

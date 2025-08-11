@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -14,7 +13,7 @@ import { Meeting } from "./meeting.entity"
 
 // TODO: add location like in person or online
 export enum EventLocationEnumType {
-  GOOGLE_MEET_AND_CALENDER = IntegrationAppTypeEnum.GOOGLE_MEET_AND_CALENDER,
+  GOOGLE_MEET_AND_CALENDER = IntegrationAppTypeEnum.GOOGLE_MEET_AND_CALENDAR,
   ZOOM_MEETING = IntegrationAppTypeEnum.ZOOM_MEETING,
 }
 
